@@ -130,7 +130,7 @@ function updateUI() {
                     $('#incomingCall').show();
                     $('#callControl').hide()
                     $('#incomingCall').show();
-                } else {
+                } else { 
                     $('#callInfoText').html('Ringing...');
                     $('#callInfoNumber').html(session.remote_identity.uri.user);
                     $('#callStatus').show();
