@@ -8,12 +8,12 @@
 </head>
 
 <body>
-    <!-- <audio id="localaudio" muted="muted"></audio>
-    <audio id="remoteaudio"></audio>
-    <button type="button" id="endButton">End</button>
+    <!-- <button type="button" id="endButton">End</button>
     <button type="button" id="callButton">Call</button> -->
-
-    <div id="wrapper">
+    
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jssip/1.0.1/jssip.js"></script> -->
+    
+    <div id="wrapper" >
         <div id="incomingCall" style="display: none">
             <div class="callInfo">
                 <h3>Incoming Call</h3>
@@ -32,7 +32,9 @@
         </div>
         <!---------TO FIELD---------------------------------------------------->
         <!---------DIALPAD---------------------------------------------------->
-        <div id="inCallButtons" style="display: none">
+        <div id="inCallButtons" style="display: none">            
+            <!-- <audio id="localaudio" muted="muted" controls></audio>
+            <audio id="remoteaudio" controls></audio> -->
             <div id="dialPad">
 
                 <div class="dialpad-char" data-value="1" unselectable="on">1</div>
@@ -52,36 +54,34 @@
                 <i id="muteIcon" class="fa fa-microphone"></i>
             </div>
         </div>
-        <!-------- Registration-------------------------------------------->
-        <div id="registration" style="display: none">
-            <form class="form">
-                <div class="alert alert-danger" role="alert" id="errorMessage">must set sip uri/password!</div>
-                <div class="form-group">
-                    <label for="txtPrivateIdentity">Name* :</label>
-                    <input type="text" class="form-control" id="txtPrivateIdentity" />
-                </div>
-                <div class="form-group">
-                    <label for="txtPassword">Secret* :</label>
-                    <input type="password" class="form-control" id="txtPassword" />
-                </div>
-                <div class="form-group">
-                    <a href="#" id="btnRegister" onclick='sipRegister();' class="btn btn-success">Connect</a>
-                    <a href="#" id="btnUnRegister" onclick='sipUnRegister();' class="btn btn-danger">disconnect</a>
-                </div>
-                </div>
-
-            </form>
-        </div>
         <!---------DIAL CONTROLS-------------------------------------------->
         <div id="callControl" style="display: none">
             <div id="to">
                 <input id="toField" type="text" placeholder="Enter number here" />
             </div>
-            <div id="connectCall"> <i class="fa fa-phone"></i>
-
-            </div>
+            <div id="connectCall" > <i class="fa fa-phone"></i></div>
+            <div id="btnUnRegister" onclick='sipUnRegister();' class="btn btn-danger">disconnect</div>
         </div>
     
+        <!-------- Registration-------------------------------------------->
+        <div id="registration" >
+                <form class="form">
+                    <div class="alert alert-danger" role="alert" id="errorMessage"></div>
+                    <div class="form-group">
+                        <label for="txtPrivateIdentity">Name* :</label>
+                        <input type="text" class="form-control" id="txtPrivateIdentity" value="600"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="txtPassword">Secret* :</label>
+                        <input type="password" class="form-control" id="txtPassword" />
+                    </div>
+                    <div class="form-group">
+                        <a href="#" id="btnRegister" onclick='sipRegister();' class="btn btn-success">Connect</a>
+                    </div>
+                    </div>
+    
+                </form>
+            </div>
     </div>
 
 

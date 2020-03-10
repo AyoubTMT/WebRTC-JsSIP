@@ -1,94 +1,189 @@
 
+var audiolocal = document.getElementById('localaudio');
+var audioremote = document.getElementById('remoteaudio');
+
 var socket;
 var configuration = {
-    'sockets': [socket],
-    'uri': '', 
-    'password': ''
+   sockets: [socket],
+    uri: '', 
+    password: '',
+    realm: '172.30.2.17',
 };;
 
 var incomingCallAudio = new window.Audio('sounds/ringtone.wav');
 incomingCallAudio.loop = true;
-var remoteAudio = new window.Audio();
-remoteAudio.autoplay = true;
+var outgoingCallAudio = new window.Audio('sounds/ringbacktone.wav');
+outgoingCallAudio.loop = true;
+var answeredCallAudio = new window.Audio('sounds/answered.wav');
+answeredCallAudio.loop = false;
+var rejectedCallAudio = new window.Audio('sounds/rejected.wav');
+rejectedCallAudio.loop = false;
+// var remoteAudio = new window.Audio();
+// remoteAudio.autoplay = true;
 
-var callOptions = {
-    mediaConstraints: {
-        audio: true,
-        video: false
-    }
-};
 
+
+var session;
 var phone;
 
+var completeSession = function () {
+    console.log("Complete Session !!!!!!!!!!!!!!!!!!!!!!!!!!");
+    session = null;
+    rejectedCallAudio.play();
+    updateUI();
+};
+
+var remoteAudio = window.document.createElement('audio');
+window.document.body.appendChild(remoteAudio);
+
 function sipRegister() {
-    socket = new JsSIP.WebSocketInterface('ws://localhost:9090');
-    configuration = {
-        'sockets': [socket],
-        'uri': 'sip:'+txtPrivateIdentity.value+'@127.0.0.1',
-        'password': txtPassword.value
-    };
-    if (configuration.uri && configuration.password) {
-        JsSIP.debug.enable("JsSIP:*"); // more detailed debug output
-        $('#errorMessage').hide();
-        phone = new JsSIP.UA(configuration);
-        phone.on('registrationFailed', function (ev) {
-            $('#errorMessage').show();
-            alert('Registering on SIP server failed with error: ' + ev.cause);
-            configuration.uri = null;
-            configuration.password = null;
-            updateUI();
-        });
-        phone.on('newRTCSession', function (ev) {
+    try{
+        btnRegister.disabled = true;
+        if ( !txtPrivateIdentity.value || !txtPassword.value) {
+            errorMessage.innerHTML = '<b>Please fill madatory fields (*)</b>';
+            btnRegister.disabled = false;
+            return;
+        }    
+
+        var socket = new JsSIP.WebSocketInterface('ws://172.30.2.17:8088/ws');
+        configuration = {
+           sockets: [socket],
+            uri: 'sip:'+txtPrivateIdentity.value+'@'+configuration.realm,
+            password: txtPassword.value,
+            realm: configuration.realm,
+            register_expires: 60000,
+            display_name : txtPrivateIdentity.value,
+            // 'ws_servers': 'ws://172.30.2.17:8088/ws'
+        };
+        if (configuration.uri && configuration.password) {
+            JsSIP.debug.enable("JsSIP:*"); // more detailed debug output
             $('#errorMessage').hide();
-            $('#callControl').show();
-            var newSession = ev.session;
-            if (session) { // hangup any existing call
-                session.terminate();
-            }
-            session = newSession;
-            var completeSession = function () {
-                session = null;
-                updateUI();
-            };
-            session.on('ended', completeSession);
-            session.on('failed', completeSession);
-            session.on('accepted', updateUI);
-            session.on('confirmed', function () {
-                var localStream = session.connection.getLocalStreams()[0];
-                var dtmfSender = session.connection.createDTMFSender(localStream.getAudioTracks()[0])
-                session.sendDTMF = function (tone) {
-                    dtmfSender.insertDTMF(tone);
-                };
+            phone = new JsSIP.UA(configuration);
+            phone.start();
+            
+            phone.on('registrationFailed', function (ev) {
+                $('#errorMessage').show();
+                $('#callControl').hide();
+                errorMessage.innerHTML = '<b>Registering on SIP server failed with error: ' + ev.cause+'</b>';
+                //alert('Registering on SIP server failed with error: ' + ev.cause);
+                configuration.uri = null;
+                configuration.password = null;
                 updateUI();
             });
-            session.on('addstream', function (e) {
-                incomingCallAudio.pause();
-                remoteAudio.src = window.URL.createObjectURL(e.stream);
+            phone.on('registered', function (ev) {
+                $('#errorMessage').hide();
+                updateUI();
             });
-            if (session.direction === 'incoming') {
-                incomingCallAudio.play();
-            }
-            updateUI();
-        });
-        phone.start();
+            phone.on('connected', function(ev){
+                updateUI();
+            });
+            phone.on('newRTCSession', function (ev) {
+                $('#errorMessage').hide();
+                $('#registration').hide();
+                $('#callControl').show();
+                var newSession = ev.session;
+                var originator = ev.originator;
+                var request = ev.request;
+                if (session) { // hangup any existing call
+                    console.log("session terminate !!!!!!!!!!!!!!");
+                    session.terminate();
+                }
+                session = newSession;
+                session.on('ended', completeSession);
+                session.on('failed', completeSession);
+                session.on('accepted', updateUI);
+                session.on('confirmed', function () {
+                    console.log("Confirmed !!!!!!!!!!!!!!");          
+                    //incomingCallAudio.pause();
+                    //outgoingCallAudio.pause();       
+                    remoteAudio.src = window.URL.createObjectURL(
+                        newSession.connection.getRemoteStreams()[0]
+                    );
+                    remoteAudio.play();    
+                    // var localStream = session.connection.getLocalStreams()[0];
+                    // var dtmfSender = session.connection.createDTMFSender(localStream.getAudioTracks()[0])
+                    // session.sendDTMF = function (tone) {
+                    //     dtmfSender.insertDTMF(tone);
+                    // };
+                    updateUI();
+                });
+                session.on('newDTMF', function () {
+                    console.log("newDTMF !!!!!!!!!!!!!!");  
+                });
+                session.on('addstream', function (e) {
+                    console.log("addstream !!!!!!!!!!!!!!");        
+                    incomingCallAudio.pause();
+                    outgoingCallAudio.pause();
+                    remoteAudio.src = window.URL.createObjectURL(e.stream); 
+                    remoteAudio.play();
+                });
+                session.on('icecandidate', function(data){
+                    self.count_icecandidate++;
+                    let that = this;
+                    if(self.count_icecandidate > 2)
+                    {
+                        data.ready()
+                    }
+                });
+                if (session.direction === 'incoming') {
+                    incomingCallAudio.play();
+                }else{
+                    outgoingCallAudio.play();
+                }
+                updateUI();
+   
+            });
+        }
+    }
+    catch (e) {
+        errorMessage.innerHTML = "<b>2:" + e + "</b>";
     }
 }
 
-var session;
-updateUI();
+function sipUnRegister() {
+    if (phone) {
+        phone.unregister();
+        phone.stop(); // shutdown all sessions
+        configuration.uri = configuration.password = null;
+        updateUI();
+    }
+}
+
+
+  
+var callOptions = {
+    'extraHeaders': [ 'X-Foo: foo', 'X-Bar: bar' ],
+    'mediaConstraints': {'audio': true, 'video': false},
+    //pcConfig: {rtcpMuxPolicy: 'negotiate'}
+    'pcConfig': {
+        'rtcpMuxPolicy': 'negotiate',
+        'iceServers': [
+        ]
+      },
+ };
 
 $('#connectCall').click(function () {
     var dest = $('#toField').val();
+    console.log("connect call !!!!!!!!!!!!!!  "+ dest);
     phone.call(dest, callOptions);
+    // var text = 'Hello Bob!';
+    // phone.sendMessage('sip:6001@172.30.1.14', text);
     updateUI();
+    console.log("connect call !!!!!!!!!!!!!!  "+ dest + " " + configuration.uri + " " + configuration.password);
+    
+    // var text = 'Hello Bob!';            
+    // console.log("Sending message !!!!!!!!!!!!!!");
+    // phone.sendMessage('sip:6001@172.30.1.14', text);
 });
 
 
 $('#answer').click(function () {
     session.answer(callOptions);
+    answeredCallAudio.play();
 });
 
-var hangup = function () {
+var hangup = function () {    
+    rejectedCallAudio.play();
     session.terminate();
 };
 
@@ -122,18 +217,24 @@ $('#inCallButtons').on('click', '.dialpad-char', function (e) {
 function updateUI() {
     if (configuration.uri && configuration.password) {
         $('#errorMessage').hide();
+        $('#registration').hide();
         $('#callControl').show();
         if (session) {
+            console.log("Session TRUE !!!!!!!!!!!!!!  ");
             if (session.isInProgress()) {
+                console.log("Session is In Progress !!!!!!!!!!!!!!  ");       
                 if (session.direction === 'incoming') {
+                    console.log("incoming ...... !!!!!!!!!!!!!!  "); 
+                    //alert('incoming: ');
                     $('#incomingCallNumber').html(session.remote_identity.uri);
                     $('#incomingCall').show();
                     $('#callControl').hide()
                     $('#incomingCall').show();
                 } else { 
+                    console.log("Ringing ...... !!!!!!!!!!!!!!  ");  
                     $('#callInfoText').html('Ringing...');
                     $('#callInfoNumber').html(session.remote_identity.uri.user);
-                    $('#callStatus').show();
+                    $('#callStatus').show();                    
                 }
 
             } else if (session.isEstablished()) {
@@ -143,6 +244,7 @@ function updateUI() {
                 $('#callInfoNumber').html(session.remote_identity.uri.user);
                 $('#inCallButtons').show();
                 incomingCallAudio.pause();
+                outgoingCallAudio.pause();
             }
             $('#callControl').hide();
         } else {
@@ -151,6 +253,7 @@ function updateUI() {
             $('#callStatus').hide();
             $('#inCallButtons').hide();
             incomingCallAudio.pause();
+            outgoingCallAudio.pause();
         }
         //microphone mute icon
         if (session && session.isMuted().audio) {
@@ -161,7 +264,7 @@ function updateUI() {
             $('#muteIcon').addClass('fa-microphone');
         }
     } else {
-        //$('#wrapper').hide();
+        $('#callControl').hide();
         $('#errorMessage').show();
         $('#registration').show();
     }
