@@ -14,6 +14,25 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jssip/1.0.1/jssip.js"></script> -->
     
     <div id="wrapper" >
+        
+        <!-------- Registration-------------------------------------------->
+        <div id="registration" >
+            <form class="form">
+                <div class="alert alert-danger" role="alert" id="errorMessage"></div>
+                <div class="form-group">
+                    <label for="txtPrivateIdentity">Name* :</label>
+                    <input type="text" class="form-control" id="txtPrivateIdentity" value="600"/>
+                </div>
+                <div class="form-group">
+                    <label for="txtPassword">Secret* :</label>
+                    <input type="password" class="form-control" id="txtPassword" />
+                </div>
+                <div class="form-group">
+                    <a href="#" id="btnRegister" onclick='sipRegister();' class="btn btn-success">Connect</a>
+                </div>
+            </form>
+        </div>
+
         <div id="incomingCall" style="display: none">
             <div class="callInfo">
                 <h3>Incoming Call</h3>
@@ -22,6 +41,7 @@
             <div id="answer"> <i class="fa fa-phone"></i></div>
             <div id="reject"> <i class="fa fa-phone"></i></div>
         </div>
+
         <div id="callStatus" style="display: none">
             <div class="callInfo">
                 <h3 id="callInfoText">info text goes here</h3>
@@ -29,8 +49,19 @@
             </div>
             <div id="hangUp"> <i class="fa fa-phone"></i>
             </div>
+            <div id="to">
+                <input id="transferField" type="text" placeholder="Enter number here" />
+            </div>
+            <div id="transfer" class="btn btn-success"  onclick='sipTransfer();'> Transfert</div>
         </div>
-        <!---------TO FIELD---------------------------------------------------->
+        <!---------DIAL CONTROLS-------------------------------------------->
+        <div id="callControl" style="display: none">
+            <div id="to">
+                <input id="toField" type="text" placeholder="Enter number here" />
+            </div>
+            <div id="connectCall"> <i class="fa fa-phone"></i></div>
+            <div id="btnUnRegister" onclick='sipUnRegister();' class="btn btn-danger">disconnect</div>
+        </div>
         <!---------DIALPAD---------------------------------------------------->
         <div id="inCallButtons" style="display: none">       
             <div id="dialPad">
@@ -51,34 +82,7 @@
                 <i id="muteIcon" class="fa fa-microphone"></i>
             </div>
         </div>
-        <!---------DIAL CONTROLS-------------------------------------------->
-        <div id="callControl" style="display: none">
-            <div id="to">
-                <input id="toField" type="text" placeholder="Enter number here" />
-            </div>
-            <div id="connectCall" > <i class="fa fa-phone"></i></div>
-            <div id="btnUnRegister" onclick='sipUnRegister();' class="btn btn-danger">disconnect</div>
-        </div>
     
-        <!-------- Registration-------------------------------------------->
-        <div id="registration" >
-                <form class="form">
-                    <div class="alert alert-danger" role="alert" id="errorMessage"></div>
-                    <div class="form-group">
-                        <label for="txtPrivateIdentity">Name* :</label>
-                        <input type="text" class="form-control" id="txtPrivateIdentity" value="600"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="txtPassword">Secret* :</label>
-                        <input type="password" class="form-control" id="txtPassword" />
-                    </div>
-                    <div class="form-group">
-                        <a href="#" id="btnRegister" onclick='sipRegister();' class="btn btn-success">Connect</a>
-                    </div>
-                    </div>
-    
-                </form>
-            </div>
     </div>
 
 

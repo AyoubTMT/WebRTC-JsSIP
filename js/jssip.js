@@ -64,6 +64,7 @@ function sipRegister() {
             phone.on('registrationFailed', function (ev) {
                 $('#errorMessage').show();
                 $('#callControl').hide();
+                $('#inCallButtons').hide();
                 errorMessage.innerHTML = '<b>Registering on SIP server failed with error: ' + ev.cause+'</b>';
                 //alert('Registering on SIP server failed with error: ' + ev.cause);
                 configuration.uri = null;
@@ -81,6 +82,7 @@ function sipRegister() {
                 $('#errorMessage').hide();
                 $('#registration').hide();
                 $('#callControl').show();
+                $('#inCallButtons').show();
                 var newSession = ev.session;
                 var originator = ev.originator;
                 var request = ev.request;
@@ -148,19 +150,27 @@ function sipUnRegister() {
         updateUI();
     }
 }
-
-
   
 var callOptions = {
+    //'replaces': session,
     'extraHeaders': [ 'X-Foo: foo', 'X-Bar: bar' ],
     'mediaConstraints': {'audio': true, 'video': false},
-    //pcConfig: {rtcpMuxPolicy: 'negotiate'}
     'pcConfig': {
         'rtcpMuxPolicy': 'negotiate',
         'iceServers': [
         ]
       },
- };
+};
+
+function sipTransfer() {
+    if (phone) {
+        var destination = $('#transferField').val();
+        session.refer(destination,callOptions);
+        completeSession();
+    }
+}
+
+
 
 $('#connectCall').click(function () {
     var dest = $('#toField').val();
@@ -211,14 +221,24 @@ $('#toField').keypress(function (e) {
 $('#inCallButtons').on('click', '.dialpad-char', function (e) {
     var $target = $(e.target);
     var value = $target.data('value');
-    session.sendDTMF(value.toString());
-});
+    //session.sendDTMF(value.toString());
+    //console.log("Pressed key " + value.toString());
+    var display = $('#toField').val();
+    $('#toField').val(display + value.toString());
 
+});
+// $('#inCallButtons #dialPad .dialpad-char').click(function(e) {
+//     console.log("Pressed key " + $(e.currentTarget).html());
+//     // var display = $('#display').val();
+//     // $('#display').val(display + $(e.currentTarget).html());
+    
+// });
 function updateUI() {
     if (configuration.uri && configuration.password) {
         $('#errorMessage').hide();
         $('#registration').hide();
         $('#callControl').show();
+        $('#inCallButtons').show();
         if (session) {
             console.log("Session TRUE !!!!!!!!!!!!!!  ");
             if (session.isInProgress()) {
@@ -228,7 +248,8 @@ function updateUI() {
                     //alert('incoming: ');
                     $('#incomingCallNumber').html(session.remote_identity.uri);
                     $('#incomingCall').show();
-                    $('#callControl').hide()
+                    $('#callControl').hide();
+                    $('#inCallButtons').hide();
                     $('#incomingCall').show();
                 } else { 
                     console.log("Ringing ...... !!!!!!!!!!!!!!  ");  
@@ -250,8 +271,8 @@ function updateUI() {
         } else {
             $('#incomingCall').hide();
             $('#callControl').show();
+            $('#inCallButtons').show();
             $('#callStatus').hide();
-            $('#inCallButtons').hide();
             incomingCallAudio.pause();
             outgoingCallAudio.pause();
         }
@@ -265,6 +286,7 @@ function updateUI() {
         }
     } else {
         $('#callControl').hide();
+        $('#inCallButtons').hide();
         $('#errorMessage').show();
         $('#registration').show();
     }
