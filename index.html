@@ -1,100 +1,150 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 
 <head>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet"  type='text/css'>
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+  <meta charset="utf-8">
+  <title>Softphone</title>
+  <style>
+    .soft-phone {
+      width: 500px;
+      max-width: 500px;
+      margin: 15px auto;
+    }
+
+    .soft-phone span {
+      display: block;
+      color: #f0f0f0;
+      font-size: 0.75em;
+      font-family: monospace;
+    }
+
+    .soft-phone .row {
+      margin: 15px 0;
+    }
+
+
+    .soft-phone .form-group input {
+      margin-bottom: 15px;
+    }
+
+    .btn-number {
+      width: 100%;
+      min-width: 60px;
+      max-width: 80px;
+      height: 70px;
+      min-height: 70px;
+      max-height: 70px;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+  <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="css/util.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
 <body>
-    <!-- <button type="button" id="endButton">End</button>
-    <button type="button" id="callButton">Call</button> -->
-    
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jssip/1.0.1/jssip.js"></script> -->
-    
-    <div id="wrapper" >
-        
-        <!-------- Registration-------------------------------------------->
-        <div id="registration" >
-            <form class="form">
-                <div class="alert alert-danger" role="alert" id="errorMessage"></div>
-                <div class="form-group">
-                    <label for="txtPrivateIdentity">Name* :</label>
-                    <input type="text" class="form-control" id="txtPrivateIdentity" value="600"/>
-                </div>
-                <div class="form-group">
-                    <label for="txtPassword">Secret* :</label>
-                    <input type="password" class="form-control" id="txtPassword" />
-                </div>
-                <div class="form-group">
-                    <a href="#" id="btnRegister" onclick='sipRegister();' class="btn btn-success">Connect</a>
-                </div>
-            </form>
-        </div>
-
-        <div id="incomingCall" style="display: none">
+  <div class="container" id="login">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default soft-phone">
+          <div id="registration">
+            <div class="form-group">
+              <div class="col-xs-4">
+                <input type="tel" class="form-control input-lg" id="txtPrivateIdentity" placeholder="Extension">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-xs-4">
+                <input type="tel" class="form-control input-lg" id="txtPassword" placeholder="Mot de passe">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-xs-4">
+                <button class="btn btn-primary" id="btnRegister" onclick='sipRegister();'>
+                  Se Connecter
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="incomingCall" style="display: none">
             <div class="callInfo">
-                <h3>Incoming Call</h3>
-                <p id="incomingCallNumber">Unknown</p>
+              <h3>Appel entrant</h3>
+              <p id="incomingCallNumber">Inconnue</p>
             </div>
             <div id="answer"> <i class="fa fa-phone"></i></div>
             <div id="reject"> <i class="fa fa-phone"></i></div>
-        </div>
-
-        <div id="callStatus" style="display: none">
+          </div>
+          <div id="callStatus" style="display: none">
             <div class="callInfo">
-                <h3 id="callInfoText">info text goes here</h3>
-                <p id="callInfoNumber">info number goes here</p>
+              <h3 id="callInfoText">information</h3>
+              <p id="callInfoNumber">Le numéro</p>
             </div>
             <div id="hangUp"> <i class="fa fa-phone"></i>
             </div>
-            <div id="to">
-                <input id="transferField" type="text" placeholder="Enter number here" />
-            </div>
-            <div id="transfer" class="btn btn-success"  onclick='sipTransfer();'> Transfert</div>
-        </div>
-        <!---------DIAL CONTROLS-------------------------------------------->
-        <div id="callControl" style="display: none">
-            <div id="to">
-                <input id="toField" type="text" placeholder="Enter number here" />
-            </div>
-            <div id="connectCall"> <i class="fa fa-phone"></i></div>
-            <div id="btnUnRegister" onclick='sipUnRegister();' class="btn btn-danger">disconnect</div>
-        </div>
-        <!---------DIALPAD---------------------------------------------------->
-        <div id="inCallButtons" style="display: none">       
-            <div id="dialPad">
-                <div class="dialpad-char" data-value="1" unselectable="on">1</div>
-                <div class="dialpad-char" data-value="2" unselectable="on">2</div>
-                <div class="dialpad-char" data-value="3" unselectable="on">3</div>
-                <div class="dialpad-char" data-value="4" unselectable="on">4</div>
-                <div class="dialpad-char" data-value="5" unselectable="on">5</div>
-                <div class="dialpad-char" data-value="6" unselectable="on">6</div>
-                <div class="dialpad-char" data-value="7" unselectable="on">7</div>
-                <div class="dialpad-char" data-value="8" unselectable="on">8</div>
-                <div class="dialpad-char" data-value="9" unselectable="on">9</div>
-                <div class="dialpad-char" data-value="*" unselectable="on">*</div>
-                <div class="dialpad-char" data-value="0" unselectable="on">0</div>
-                <div class="dialpad-char" data-value="#" unselectable="on">#</div>
-            </div>
-            <div id="mute">
-                <i id="muteIcon" class="fa fa-microphone"></i>
-            </div>
-        </div>
-    
-    </div>
+            <!-- <div id="to">
+					<input id="transferField" type="text" placeholder="Entrez le numéro ici" />
+				</div> -->
+          </div>
 
-
+          <form action="./">
+            <div class="form-group">
+              <div class="col-xs-12">
+                <input type="tel" class="form-control input-lg" id="txtPhone" placeholder="Numéro">
+              </div>
+            </div>
+          </form>
+          <div class="row">
+            <div id="inCallButtons" >       
+              <div id="dialPad">
+                  <div class="dialpad-char" data-value="1" unselectable="on">1</div>
+                  <div class="dialpad-char" data-value="2" unselectable="on">2</div>
+                  <div class="dialpad-char" data-value="3" unselectable="on">3</div>
+                  <div class="dialpad-char" data-value="4" unselectable="on">4</div>
+                  <div class="dialpad-char" data-value="5" unselectable="on">5</div>
+                  <div class="dialpad-char" data-value="6" unselectable="on">6</div>
+                  <div class="dialpad-char" data-value="7" unselectable="on">7</div>
+                  <div class="dialpad-char" data-value="8" unselectable="on">8</div>
+                  <div class="dialpad-char" data-value="9" unselectable="on">9</div>
+                  <div class="dialpad-char" data-value="*" unselectable="on">*</div>
+                  <div class="dialpad-char" data-value="0" unselectable="on">0</div>
+                  <div class="dialpad-char" data-value="#" unselectable="on">#</div>
+              </div>
+          </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="btn-group btn-group-justified">
+                <a class="btn btn-info" id="muted" style="font-size: 30px;"><i id="muteIcon"
+                    class="fa fa-microphone"></i></a>
+                <a class="btn btn-danger btn-lg" id="btnUnRegister" onclick='sipUnRegister();'><i class="glyphicon glyphicon-phone-alt"></i> </a>
+                <a class="btn btn-success btn-lg" id="Callconnect"><i class="glyphicon glyphicon-earphone"></i> </a>
+                <a class="btn btn-info" id="transfer" onclick='sipTransfer();'>Transfert </a>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.soft-phone -->
+      </div><!-- /.col-xs-6 -->
+    </div><!-- /.row -->
+  </div><!-- /.container -->
+  <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+  <script src="vendor/bootstrap/js/popper.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="vendor/select2/select2.min.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/jssip-3.3.6.js" type="application/javascript"></script>
+  <script src="js/jssip.js" type="application/javascript"></script>
 </body>
-<script src="js/vendor/jquery-2.1.4.min.js"></script>
-<script src="js/vendor/bootstrap.min.js"></script>
-<script src="js/vendor/tabcomplete.min.js"></script>
-<script src="js/vendor/livefilter.min.js"></script>
-<script src="js/vendor/src/bootstrap-select.js"></script>
-<script src="js/vendor/filterlist.min.js"></script>
-<script src="js/plugins.js"></script>
-<script src="js/jssip-3.3.6.js"></script>
-<script src="js/jssip.js"></script>
 
 </html>

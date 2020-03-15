@@ -81,6 +81,7 @@ function sipRegister() {
             phone.on('newRTCSession', function (ev) {
                 $('#errorMessage').hide();
                 $('#registration').hide();
+                $('#centerdiv').show();
                 $('#callControl').show();
                 $('#inCallButtons').show();
                 var newSession = ev.session;
@@ -164,7 +165,7 @@ var callOptions = {
 
 function sipTransfer() {
     if (phone) {
-        var destination = $('#transferField').val();
+        var destination = $('#txtPhone').val();
         session.refer(destination,callOptions);
         completeSession();
     }
@@ -172,8 +173,8 @@ function sipTransfer() {
 
 
 
-$('#connectCall').click(function () {
-    var dest = $('#toField').val();
+$('#Callconnect').click(function () {
+    var dest = $('#txtPhone').val();
     console.log("connect call !!!!!!!!!!!!!!  "+ dest);
     phone.call(dest, callOptions);
     // var text = 'Hello Bob!';
@@ -200,7 +201,7 @@ var hangup = function () {
 $('#hangUp').click(hangup);
 $('#reject').click(hangup);
 
-$('#mute').click(function () {
+$('#muted').click(function () {
     console.log('MUTE CLICKED');
     if (session.isMuted().audio) {
         session.unmute({
@@ -213,9 +214,9 @@ $('#mute').click(function () {
     }
     updateUI();
 });
-$('#toField').keypress(function (e) {
+$('#txtPhone').keypress(function (e) {
     if (e.which === 13) { //enter
-        $('#connectCall').click();
+        $('#Callconnect').click();
     }
 });
 $('#inCallButtons').on('click', '.dialpad-char', function (e) {
@@ -223,8 +224,8 @@ $('#inCallButtons').on('click', '.dialpad-char', function (e) {
     var value = $target.data('value');
     //session.sendDTMF(value.toString());
     //console.log("Pressed key " + value.toString());
-    var display = $('#toField').val();
-    $('#toField').val(display + value.toString());
+    var display = $('#txtPhone').val();
+    $('#txtPhone').val(display + value.toString());
 
 });
 // $('#inCallButtons #dialPad .dialpad-char').click(function(e) {
@@ -237,8 +238,11 @@ function updateUI() {
     if (configuration.uri && configuration.password) {
         $('#errorMessage').hide();
         $('#registration').hide();
+        $('#centerdiv').show();
         $('#callControl').show();
         $('#inCallButtons').show();
+        
+        //$('#incomingCallNumber').html(session.remote_identity.uri);
         if (session) {
             console.log("Session TRUE !!!!!!!!!!!!!!  ");
             if (session.isInProgress()) {
@@ -253,7 +257,7 @@ function updateUI() {
                     $('#incomingCall').show();
                 } else { 
                     console.log("Ringing ...... !!!!!!!!!!!!!!  ");  
-                    $('#callInfoText').html('Ringing...');
+                    $('#callInfoText').html('Sonnerie...');
                     $('#callInfoNumber').html(session.remote_identity.uri.user);
                     $('#callStatus').show();                    
                 }
@@ -261,7 +265,7 @@ function updateUI() {
             } else if (session.isEstablished()) {
                 $('#callStatus').show();
                 $('#incomingCall').hide();
-                $('#callInfoText').html('In Call');
+                $('#callInfoText').html('En appel');
                 $('#callInfoNumber').html(session.remote_identity.uri.user);
                 $('#inCallButtons').show();
                 incomingCallAudio.pause();
@@ -286,7 +290,8 @@ function updateUI() {
         }
     } else {
         $('#callControl').hide();
-        $('#inCallButtons').hide();
+        //$('#inCallButtons').hide();
+        $('#centerdiv').hide();
         $('#errorMessage').show();
         $('#registration').show();
     }
