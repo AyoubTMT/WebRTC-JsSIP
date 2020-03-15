@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+  <meta charset="utf-8">
+  <title>Softphone</title>
+  <style>
+    .soft-phone {
+      width: 500px;
+      max-width: 500px;
+      margin: 15px auto;
+    }
+
+    .soft-phone span {
+      display: block;
+      color: #f0f0f0;
+      font-size: 0.75em;
+      font-family: monospace;
+    }
+
+    .soft-phone .row {
+      margin: 15px 0;
+    }
+
+
+    .soft-phone .form-group input {
+      margin-bottom: 15px;
+    }
+
+    .btn-number {
+      width: 100%;
+      min-width: 60px;
+      max-width: 80px;
+      height: 70px;
+      min-height: 70px;
+      max-height: 70px;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+  <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="css/util.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+
+<body>
+  <div class="container" id="login">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default soft-phone">
+          <div id="registration">
+            <div class="form-group">
+              <div class="col-xs-4">
+                <input type="tel" class="form-control input-lg" id="txtPrivateIdentity" placeholder="Extension">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-xs-4">
+                <input type="tel" class="form-control input-lg" id="txtPassword" placeholder="Mot de passe">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-xs-4">
+                <button class="btn btn-primary" id="btnRegister" onclick='sipRegister();'>
+                  Se Connecter
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="incomingCall" style="display: none">
+            <div class="callInfo">
+              <h3>Appel entrant</h3>
+              <p id="incomingCallNumber">Inconnue</p>
+            </div>
+            <div id="answer"> <i class="fa fa-phone"></i></div>
+            <div id="reject"> <i class="fa fa-phone"></i></div>
+          </div>
+          <div id="callStatus" style="display: none">
+            <div class="callInfo">
+              <h3 id="callInfoText">information</h3>
+              <p id="callInfoNumber">Le numéro</p>
+            </div>
+            <div id="hangUp"> <i class="fa fa-phone"></i>
+            </div>
+            <!-- <div id="to">
+					<input id="transferField" type="text" placeholder="Entrez le numéro ici" />
+				</div> -->
+          </div>
+
+          <form action="./">
+            <div class="form-group">
+              <div class="col-xs-12">
+                <input type="tel" class="form-control input-lg" id="txtPhone" placeholder="Numéro">
+              </div>
+            </div>
+          </form>
+          <div class="row">
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">1</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">2</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">3</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">4</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">5</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">6</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">7</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">8</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">9</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">*</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">0</button>
+            </div>
+            <div class="col-xs-4">
+              <button class="btn btn-primary btn-lg btn-number">#</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="btn-group btn-group-justified">
+                <a class="btn btn-info" id="muted" style="font-size: 30px;"><i id="muteIcon"
+                    class="fa fa-microphone"></i></a>
+                <a class="btn btn-danger btn-lg"><i class="glyphicon glyphicon-phone-alt"></i> </a>
+                <a class="btn btn-success btn-lg" id="Callconnect"><i class="glyphicon glyphicon-earphone"></i> </a>
+                <a class="btn btn-info" id="transfer" onclick='sipTransfer();'>Transfert </a>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.soft-phone -->
+      </div><!-- /.col-xs-6 -->
+    </div><!-- /.row -->
+  </div><!-- /.container -->
+  <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+  <script src="vendor/bootstrap/js/popper.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="vendor/select2/select2.min.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/jssip-3.3.6.js"></script>
+  <script src="js/jssip.js"></script>
+</body>
+
+</html>
